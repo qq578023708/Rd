@@ -23,7 +23,7 @@ ARdCharacter::ARdCharacter()
 		
 	// Don't rotate when the controller rotates. Let that just affect the camera.
 	bUseControllerRotationPitch = false;
-	bUseControllerRotationYaw = false;
+	bUseControllerRotationYaw = true;
 	bUseControllerRotationRoll = false;
 
 	// Configure character movement
@@ -39,6 +39,7 @@ ARdCharacter::ARdCharacter()
 	GetCharacterMovement()->BrakingDecelerationWalking = 2000.f;
 	GetCharacterMovement()->BrakingDecelerationFalling = 1500.0f;
 	GetCharacterMovement()->bOrientRotationToMovement=false;
+	GetCharacterMovement()->bUseControllerDesiredRotation=false;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -46,10 +47,10 @@ ARdCharacter::ARdCharacter()
 	CameraBoom->SetRelativeRotation(FRotator(-60,0,0));
 	CameraBoom->TargetArmLength = 800.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
-	CameraBoom->bInheritPitch=false;
+	/*CameraBoom->bInheritPitch=false;
 	CameraBoom->bInheritRoll=false;
 	CameraBoom->bInheritYaw=false;
-	CameraBoom->bDoCollisionTest=false;
+	CameraBoom->bDoCollisionTest=false;*/
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -107,10 +108,11 @@ void ARdCharacter::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		//const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator Rotation = Controller->GetControlRotation();
 
 		//获取相机摇臂方向，为前进方向
-		const FRotator Rotation=CameraBoom->GetRelativeRotation();
+		//const FRotator Rotation=CameraBoom->GetRelativeRotation();
+		
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
 		// get forward vector
