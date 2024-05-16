@@ -27,5 +27,5 @@ FString GetClientServerContextString(UObject* ContextObject)
 #endif
 		
 	}
-	return TEXT("[]");
+	return TEXT("[Unknow]");
 }
