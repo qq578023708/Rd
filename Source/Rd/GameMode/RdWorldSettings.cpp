@@ -15,6 +15,7 @@ void ARdWorldSettings::CheckForErrors()
 	Super::CheckForErrors();
 }
 
+//默认经验配置
 FPrimaryAssetId ARdWorldSettings::GetDefaultGameplayExperience() const
 {
 	FPrimaryAssetId Result;
