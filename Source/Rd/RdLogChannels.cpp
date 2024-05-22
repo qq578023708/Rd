@@ -1,5 +1,10 @@
 ﻿#include "RdLogChannels.h"
 
+DEFINE_LOG_CATEGORY(LogRd)
+DEFINE_LOG_CATEGORY(LogRdExperience)
+DEFINE_LOG_CATEGORY(LogRdAbilitySystem)
+DEFINE_LOG_CATEGORY(LogRdTeams)
+
 FString GetClientServerContextString(UObject* ContextObject)
 {
 	ENetRole Role=ROLE_None;

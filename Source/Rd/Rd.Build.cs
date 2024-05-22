@@ -16,7 +16,20 @@ public class Rd : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[]
 		{
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
-			"GameFeatures"
+			"GameFeatures",
+			"ModularGameplay",
+			"GameplayTags"
+		});
+		
+		PrivateDependencyModuleNames.AddRange(new string[]
+		{
+			"UMG",
+			"CommonUI",
+			"UIExtension",
+			"CommonGame",
+			"InputCore",
+			"Slate",
+			"SlateCore"
 		});
 	}
 }

@@ -35,8 +35,24 @@
 			"Enabled": true
 		},
 		{
-			"Name": "ShooterCore",
+			"Name": "CommonGame",
 			"Enabled": true
+		},
+		{
+			"Name": "CommonLoadingScreen",
+			"Enabled": false
+		},
+		{
+			"Name": "CommonUser",
+			"Enabled": false
+		},
+		{
+			"Name": "GameplayMessageRouter",
+			"Enabled": false
+		},
+		{
+			"Name": "ModularGameplayActors",
+			"Enabled": false
 		}
 	]
 }
