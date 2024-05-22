@@ -47,10 +47,10 @@ ARdCharacter::ARdCharacter()
 	CameraBoom->SetRelativeRotation(FRotator(-60,0,0));
 	CameraBoom->TargetArmLength = 800.0f; // The camera follows at this distance behind the character	
 	CameraBoom->bUsePawnControlRotation = false; // Rotate the arm based on the controller
-	/*CameraBoom->bInheritPitch=false;
+	CameraBoom->bInheritPitch=false;
 	CameraBoom->bInheritRoll=false;
 	CameraBoom->bInheritYaw=false;
-	CameraBoom->bDoCollisionTest=false;*/
+	CameraBoom->bDoCollisionTest=false;
 
 	// Create a follow camera
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
@@ -65,6 +65,8 @@ void ARdCharacter::BeginPlay()
 {
 	// Call the base class  
 	Super::BeginPlay();
+
+	
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -108,10 +110,10 @@ void ARdCharacter::Move(const FInputActionValue& Value)
 	if (Controller != nullptr)
 	{
 		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
+		//const FRotator Rotation = Controller->GetControlRotation();
 
 		//获取相机摇臂方向，为前进方向
-		//const FRotator Rotation=CameraBoom->GetRelativeRotation();
+		const FRotator Rotation=CameraBoom->GetRelativeRotation();
 		
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 

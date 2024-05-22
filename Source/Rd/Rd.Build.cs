@@ -26,7 +26,10 @@ public class Rd : ModuleRules
 			"UMG",
 			"CommonUI",
 			"UIExtension",
-			"CommonGame"
+			"CommonGame",
+			"InputCore",
+			"Slate",
+			"SlateCore"
 		});
 	}
 }
