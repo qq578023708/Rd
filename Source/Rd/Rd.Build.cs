@@ -18,7 +18,8 @@ public class Rd : ModuleRules
 			"Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput",
 			"GameFeatures",
 			"ModularGameplay",
-			"GameplayTags"
+			"GameplayTags",
+			"GameplayAbilities"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
