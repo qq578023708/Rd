@@ -7,8 +7,10 @@
 #include "Misc/DataValidation.h"
 #endif
 
+#include "CommonUIExtensions.h"
 #include "GameFeaturesSubsystemSettings.h"
 #include "Components/GameFrameworkComponentManager.h"
+#include "UI/RdHUD.h"
 
 #include UE_INLINE_GENERATED_CPP_BY_NAME(GameFeatureAction_AddWidget)
 #define LOCTEXT_NAMESPACE "RdGameFeatures"
@@ -91,27 +93,89 @@ void UGameFeatureAction_AddWidget::AddToWorld(const FWorldContext& WorldContext,
 	{
 		if(UGameFrameworkComponentManager* ComponentManager=UGameInstance::GetSubsystem<UGameFrameworkComponentManager>(GameInstance))
 		{
-			//@TODO...
-			//TSoftClassPtr<AActor> HUDActorClass
+			TSoftClassPtr<AActor> HUDActorClass=ARdHUD::StaticClass();
+			TSharedPtr<FComponentRequestHandle> ExtensionRequestHandle=ComponentManager->AddExtensionHandler(
+				HUDActorClass,
+				UGameFrameworkComponentManager::FExtensionHandlerDelegate::CreateUObject(this,&ThisClass::HandleActorExtension,ChangeContext));
+			ActiveData.ComponentRequests.Add(ExtensionRequestHandle);
 		}
 	}
 }
 
 void UGameFeatureAction_AddWidget::Reset(FPerContextData& ActiveData)
 {
+	ActiveData.ComponentRequests.Empty();
+	for (TPair<FObjectKey,FPerActorData>& Pair : ActiveData.ActorData)
+	{
+		for (FUIExtensionHandle& Handle:Pair.Value.ExtensionHandles)
+		{
+			Handle.Unregister();
+		}
+	}
+	ActiveData.ActorData.Empty();
 }
 
 void UGameFeatureAction_AddWidget::HandleActorExtension(AActor* Actor, FName EventName,
 	FGameFeatureStateChangeContext ChangeContext)
 {
+	FPerContextData& ActiveData=ContextData.FindOrAdd(ChangeContext);
+	if((EventName==UGameFrameworkComponentManager::NAME_ExtensionRemoved) || (EventName==UGameFrameworkComponentManager::NAME_ReceiverRemoved))
+	{
+		RemoveWidgets(Actor,ActiveData);
+	}
+	else if((EventName==UGameFrameworkComponentManager::NAME_ExtensionAdded) || (EventName==UGameFrameworkComponentManager::NAME_ReceiverAdded))
+	{
+		AddWidgets(Actor,ActiveData);
+	}
 }
 
 void UGameFeatureAction_AddWidget::AddWidgets(AActor* Actor, FPerContextData& ActiveData)
 {
+	ARdHUD* HUD=CastChecked<ARdHUD>(Actor);
+	if(!HUD->GetOwningPlayerController())
+	{
+		return;
+	}
+
+	if(ULocalPlayer* LocalPlayer=Cast<ULocalPlayer>(HUD->GetOwningPlayerController()->Player))
+	{
+		FPerActorData& ActorData=ActiveData.ActorData.FindOrAdd(HUD);
+		for (const FRdHUDLayoutRequest& Entry:Layout)
+		{
+			if(TSubclassOf<UCommonActivatableWidget> ConcreteWidgetClass=Entry.LayoutClass.Get())
+			{
+				ActorData.LayoutsAdded.Add(UCommonUIExtensions::PushContentToLayer_ForPlayer(LocalPlayer,Entry.LayerID,ConcreteWidgetClass));
+			}
+		}
+
+		UUIExtensionSubsystem* ExtensionSubsystem=HUD->GetWorld()->GetSubsystem<UUIExtensionSubsystem>();
+		for (const FRdHUDElementEntry& Entry:Widgets)
+		{
+			ActorData.ExtensionHandles.Add(ExtensionSubsystem->RegisterExtensionAsWidgetForContext(Entry.SlotID,LocalPlayer,Entry.WidgetClass.Get(),-1));
+		}
+	}
 }
 
 void UGameFeatureAction_AddWidget::RemoveWidgets(AActor* Actor, FPerContextData& ActiveData)
 {
+	ARdHUD* HUD=CastChecked<ARdHUD>(Actor);
+	FPerActorData* ActorData=ActiveData.ActorData.Find(HUD);
+	if (ActorData)
+	{
+		for (TWeakObjectPtr<UCommonActivatableWidget>& AddedLayout:ActorData->LayoutsAdded)
+		{
+			if (AddedLayout.IsValid())
+			{
+				AddedLayout->DeactivateWidget();
+			}
+		}
+
+		for (FUIExtensionHandle& Handle:ActorData->ExtensionHandles)
+		{
+			Handle.Unregister();
+		}
+		ActiveData.ActorData.Remove(HUD);
+	}
 }
 
 #undef LOCTEXT_NAMESPACE

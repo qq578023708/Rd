@@ -19,7 +19,8 @@ public class Rd : ModuleRules
 			"GameFeatures",
 			"ModularGameplay",
 			"GameplayTags",
-			"GameplayAbilities"
+			"GameplayAbilities",
+			"GameplayTasks"
 		});
 		
 		PrivateDependencyModuleNames.AddRange(new string[]
@@ -30,7 +31,8 @@ public class Rd : ModuleRules
 			"CommonGame",
 			"InputCore",
 			"Slate",
-			"SlateCore"
+			"SlateCore",
+			"NetCore"
 		});
 	}
 }
